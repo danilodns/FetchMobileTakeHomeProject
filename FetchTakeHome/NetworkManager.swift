@@ -7,12 +7,16 @@
 
 import Foundation
 
-class NetworkManager {
+protocol APIProtocol {
+    func fetchRecipes() async -> (recipes: RecipeResponse, error: Error?)
+}
+
+class NetworkManager: APIProtocol {
     static let shared = NetworkManager()
     
     private let recipesEndpoint: String = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
     
-    func fetchRecipes() async -> (recipes: [Recipe], error: Error?) {
+    func fetchRecipes() async -> (recipes: RecipeResponse, error: Error?) {
         guard let url = URL(string: recipesEndpoint) else {
             return ([], NetworkError.invalidURL)
         }
@@ -25,7 +29,7 @@ class NetworkManager {
             case 200..<300:
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let result = try decoder.decode([Recipe].self, from: data)
+                let result = try decoder.decode(RecipeResponse.self, from: data)
                 return (result, nil)
             case 400..<500:
                 return ([], NetworkError.clientError(statusCode: responseURL.statusCode))

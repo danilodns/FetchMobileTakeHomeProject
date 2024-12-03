@@ -13,4 +13,14 @@ struct Recipe: Decodable {
     var photoUrlSmall: String?
     var sourceUrl: String?
     var youtubeUrl: String?
+    
+    init(recipeServerResponse: RecipeServerResponse) {
+        self.uuid = recipeServerResponse.uuid
+        self.cuisine = recipeServerResponse.cuisine
+        self.name = recipeServerResponse.name
+        self.photoUrlLarge = recipeServerResponse.photoUrlLarge
+        self.photoUrlSmall = recipeServerResponse.photoUrlSmall
+        self.sourceUrl = recipeServerResponse.sourceUrl
+        self.youtubeUrl = recipeServerResponse.youtubeUrl
+    }
 }
