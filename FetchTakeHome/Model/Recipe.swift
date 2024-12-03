@@ -12,5 +12,5 @@ struct Recipe {
     var photoUrlLarge: String?
     var photoUrlSmall: String?
     var sourceUrl: String?
-    var youtubeUrl: String?    
+    var youtubeUrl: String?
 }
