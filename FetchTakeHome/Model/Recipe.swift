@@ -5,7 +5,7 @@
 //  Created by Danilo Silveira on 2024-12-03.
 //
 
-struct Recipe {
+struct Recipe: Decodable {
     var uuid: String
     var cuisine: String
     var name: String
