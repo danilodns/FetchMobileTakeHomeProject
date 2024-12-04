@@ -10,6 +10,7 @@ import Foundation
 class RecipesViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
     @Published var error: Error?
+    @Published var hasError: Bool = false
     
     let api: APIProtocol
     
@@ -19,7 +20,13 @@ class RecipesViewModel: ObservableObject {
     
     func fetchRecipes() async {
         let result = await api.fetchRecipes()
-        recipes = result.recipes.map({ Recipe(recipeServerResponse: $0) })
-        error = result.error
+        await MainActor.run {
+            recipes = result.response?.recipes.compactMap({ Recipe(recipeServerResponse: $0) }) ?? []
+            error = result.error
+            if error != nil {
+                hasError.toggle()
+            }
+        }
+        
     }
 }

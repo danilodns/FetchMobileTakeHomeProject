@@ -8,7 +8,7 @@
 import Foundation
 
 protocol APIProtocol {
-    func fetchRecipes() async -> (recipes: RecipeResponse, error: Error?)
+    func fetchRecipes() async -> (response: RecipeResponse?, error: Error?)
 }
 
 class NetworkManager: APIProtocol {
@@ -16,14 +16,14 @@ class NetworkManager: APIProtocol {
     
     private let recipesEndpoint: String = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
     
-    func fetchRecipes() async -> (recipes: RecipeResponse, error: Error?) {
+    func fetchRecipes() async -> (response: RecipeResponse?, error: Error?) {
         guard let url = URL(string: recipesEndpoint) else {
-            return ([], NetworkError.invalidURL)
+            return (nil, NetworkError.invalidURL)
         }
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             guard let responseURL = response as? HTTPURLResponse else {
-                return ([], NetworkError.invalidURL)
+                return (nil, NetworkError.invalidURL)
             }
             switch responseURL.statusCode {
             case 200..<300:
@@ -32,19 +32,19 @@ class NetworkManager: APIProtocol {
                 let result = try decoder.decode(RecipeResponse.self, from: data)
                 return (result, nil)
             case 400..<500:
-                return ([], NetworkError.clientError(statusCode: responseURL.statusCode))
+                return (nil, NetworkError.clientError(statusCode: responseURL.statusCode))
             case 500..<600:
-                return ([], NetworkError.serverError(statusCode: responseURL.statusCode))
+                return (nil, NetworkError.serverError(statusCode: responseURL.statusCode))
             default:
-                return ([], NetworkError.noData)
+                return (nil, NetworkError.noData)
             }
             
-        } catch let decodingError as DecodingError {
-            return ([], NetworkError.invalidDataFormart)
+        } catch _ as DecodingError {
+            return (nil, NetworkError.invalidDataFormart)
         } catch let urlError as URLError {
-            return ([], NetworkError.networkFailure(error: urlError))
+            return (nil, NetworkError.networkFailure(error: urlError))
         } catch {
-            return ([], NetworkError.unknowenError(error: error))
+            return (nil, NetworkError.unknowenError(error: error))
         }
         
     }

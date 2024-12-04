@@ -8,17 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject var viewModel: RecipesViewModel
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        List {
+            ForEach(viewModel.recipes, id: \.self) { recipe in
+                RecipeCellComponent(recipe: recipe)
+            }
+        }.alert(viewModel.error?.localizedDescription ?? "Error", isPresented: $viewModel.hasError, actions: {
+            
+        })
+        .task {
+            await viewModel.fetchRecipes()
         }
-        .padding()
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(viewModel: RecipesViewModel())
 }

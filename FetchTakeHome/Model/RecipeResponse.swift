@@ -5,7 +5,9 @@
 //  Created by Danilo Silveira on 2024-12-03.
 //
 
-typealias RecipeResponse = [RecipeServerResponse]
+struct RecipeResponse: Decodable {
+    let recipes: [RecipeServerResponse]
+}
 
 struct RecipeServerResponse: Decodable {
     var uuid: String
