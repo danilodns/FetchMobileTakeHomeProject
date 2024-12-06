@@ -8,14 +8,32 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var viewModel: RecipesViewModel
+    @StateObject var viewModel = RecipesViewModel()
+    @State var isOpenedOptionView = false
     
     var body: some View {
-        List {
-            ForEach(viewModel.recipes, id: \.self) { recipe in
-                RecipeCellComponent(recipe: recipe)
+        NavigationStack {
+            List {
+                ForEach(viewModel.filteredRecipes, id: \.self) { recipe in
+                    RecipeCellComponent(recipe: recipe)
+                }
+            }.refreshable {
+                await viewModel.fetchRecipes()
             }
-        }.alert(viewModel.error?.localizedDescription ?? "Error", isPresented: $viewModel.hasError, actions: {
+            .navigationTitle("Recipes")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                Button {
+                    isOpenedOptionView.toggle()
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease")
+                }
+
+            }
+        }.sheet(isPresented: $isOpenedOptionView) {
+            FilterRecipeView(filterRecipeVM: viewModel)
+        }
+        .alert(viewModel.error?.localizedDescription ?? "Error", isPresented: $viewModel.hasError, actions: {
             
         })
         .task {
@@ -25,5 +43,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView(viewModel: RecipesViewModel())
+    ContentView()
 }
