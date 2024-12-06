@@ -13,12 +13,22 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(viewModel.filteredRecipes, id: \.self) { recipe in
-                    RecipeCellComponent(recipe: recipe)
+            VStack {
+                if $viewModel.filteredRecipes.isEmpty {
+                    Text("No Recipes to Display")
+                } else {
+                    List {
+                        
+                        ForEach(viewModel.filteredRecipes, id: \.self) { recipe in
+                            LazyVStack {
+                                RecipeCellComponent(recipe: recipe)
+                            }
+                        }
+                        
+                    }.refreshable {
+                        await viewModel.fetchRecipes()
+                    }
                 }
-            }.refreshable {
-                await viewModel.fetchRecipes()
             }
             .navigationTitle("Recipes")
             .navigationBarTitleDisplayMode(.inline)
@@ -28,7 +38,7 @@ struct ContentView: View {
                 } label: {
                     Image(systemName: "line.3.horizontal.decrease")
                 }
-
+                
             }
         }.sheet(isPresented: $isOpenedOptionView) {
             FilterRecipeView(filterRecipeVM: viewModel)

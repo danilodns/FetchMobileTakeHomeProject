@@ -19,10 +19,9 @@ struct FilterRecipeView: View {
                             HStack {
                                 Text(cusine)
                                 Spacer()
-                                if filterRecipeVM.selectedFilters.contains(cusine) {
-                                    Image(systemName: "checkmark")
-                                        .foregroundColor(.blue) // Checkmark color
-                                }
+                                Image(systemName: filterRecipeVM.selectedFilters.contains(cusine) ? "checkmark.square" : "square")
+                                    .foregroundColor(.blue) // Checkmark color
+                                
                             }.contentShape(Rectangle())
                                 .onTapGesture {
                                     filterRecipeVM.toggleFilter(cusine)

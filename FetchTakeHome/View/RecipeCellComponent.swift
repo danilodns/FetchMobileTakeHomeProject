@@ -10,7 +10,7 @@ import SwiftUI
 struct RecipeCellComponent: View {
     @State var recipe: Recipe
     var body: some View {
-        LazyHStack {
+        HStack(alignment: .top) {
             AsyncImageCached(url: URL(string: recipe.photoUrlSmall ?? "")) { phase in
                 switch phase {
                 case .empty:
@@ -19,29 +19,28 @@ struct RecipeCellComponent: View {
                     image
                         .resizable()
                         .scaledToFill()
-                        .frame(width: 50, height: 50)
-                        .clipShape(Circle())
                 case .failure(_):
                     Image(systemName: "questionmark")
-                        .frame(width: 40, height: 40)
-                        .background(Color.gray)
-                        .clipShape(Circle())
+                        
                 @unknown default:
                     Image(systemName: "questionmark")
-                        .frame(width: 40, height: 40)
-                        .background(Color.gray)
-                        .clipShape(Circle())
                 }
-            }
+            }.frame(width: 50, height: 50)
+                .background(Color.gray)
+                .clipShape(Circle())
             VStack(alignment: .leading) {
-                Text(recipe.name).font(.headline)
+                Text(recipe.name)
+                    .lineLimit(nil)
+                    .multilineTextAlignment(.leading)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Text(recipe.cuisine).font(.subheadline)
-                
+                    
             }
         }
     }
 }
 
 #Preview {
-    RecipeCellComponent(recipe: Recipe(recipeServerResponse: RecipeServerResponse(uuid: "2323", cuisine: "aetea", name: "ababab")))
+    RecipeCellComponent(recipe: Recipe(recipeServerResponse: RecipeServerResponse(uuid: "2323", cuisine: "Polish", name: "Polskie NaleÅ›nikis sa Cukierkami (Polish Pancakes)", photoUrlSmall: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/8b526c42-5121-4ddf-b8f9-a0c1153b5c20/small.jpg")))
 }
