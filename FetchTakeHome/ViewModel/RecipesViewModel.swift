@@ -31,14 +31,27 @@ class RecipesViewModel: ObservableObject {
     
     func fetchRecipes() async {
         let result = await api.fetchRecipes()
-        await MainActor.run {
-            recipes = result.response?.recipes.compactMap({ Recipe(recipeServerResponse: $0) }) ?? []
-            error = result.error as? NetworkError
+        await parseData(response: result.response, error: result.error)
+    }
+    
+    func fetchMalformedRecipes() async {
+        guard let result = await (api as? NetworkManager)?.fetchRecipesMalformed() else { return }
+        await parseData(response: result.response, error: result.error)
+    }
+    
+    func fetchEmptyRecipes() async {
+        guard let result = await (api as? NetworkManager)?.fetchEmptyRecipes() else { return }
+        await parseData(response: result.response, error: result.error)
+    }
+    
+    private func parseData(response: RecipeResponse?, error: Error?) async {
+        await MainActor.run { [weak self] in
+            self?.recipes = response?.recipes.compactMap({ Recipe(recipeServerResponse: $0) }) ?? []
+            self?.error = error as? NetworkError
             if error != nil {
-                hasError.toggle()
+                self?.hasError.toggle()
             }
         }
-        
     }
     
     func selectAllFilters() {

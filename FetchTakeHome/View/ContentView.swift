@@ -15,20 +15,26 @@ struct ContentView: View {
         NavigationStack {
             VStack {
                 if $viewModel.filteredRecipes.isEmpty {
-                    Text("No Recipes to Display")
+                    VStack {
+                        Text("No recipes are available.")
+                        Button("Refresh") {
+                            Task {
+                                await viewModel.fetchRecipes()
+                            }
+                        }
+                    }
                 } else {
                     List {
-                        
-                        ForEach(viewModel.filteredRecipes, id: \.self) { recipe in
+                        ForEach(viewModel.filteredRecipes, id: \.id) { recipe in
                             LazyVStack {
                                 RecipeCellComponent(recipe: recipe)
                             }
                         }
                         
-                    }.refreshable {
-                        await viewModel.fetchRecipes()
                     }
                 }
+            }.refreshable {
+                await viewModel.fetchRecipes()
             }
             .navigationTitle("Recipes")
             .navigationBarTitleDisplayMode(.inline)
@@ -43,8 +49,18 @@ struct ContentView: View {
         }.sheet(isPresented: $isOpenedOptionView) {
             FilterRecipeView(filterRecipeVM: viewModel)
         }
-        .alert(viewModel.error?.localizedDescription ?? "Error", isPresented: $viewModel.hasError, actions: {
+        .alert(isPresented: $viewModel.hasError, error: viewModel.error, actions: { localizedError in
+            Button("Cancel", role: .cancel) {
+                
+            }
+            Button("Retry") {
+                Task {
+                    await viewModel.fetchRecipes()
+                }
+            }
             
+        }, message: { localizedError in
+            Text("Try again in a few minutes")
         })
         .task {
             await viewModel.fetchRecipes()

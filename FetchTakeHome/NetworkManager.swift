@@ -11,13 +11,30 @@ protocol APIProtocol {
     func fetchRecipes() async -> (response: RecipeResponse?, error: Error?)
 }
 
+fileprivate enum Endpoint {
+    var baseURL: String { "https://d3jbb8n5wk0qxi.cloudfront.net/" }
+    
+    case recipes
+    case malformedData
+    case emptyData
+    
+    // variable used to concatenate the api domain and paths
+    var rawValue: String {
+        switch self {
+        case .recipes: return "recipes.json"
+        case .malformedData: return "recipes-malformed.json"
+        case .emptyData: return "recipes-empty.json"
+        }
+    }
+    
+    var url: URL? { URL(string:baseURL + rawValue) }
+}
+
 class NetworkManager: APIProtocol {
     static let shared = NetworkManager()
     
-    private let recipesEndpoint: String = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
-    
-    func fetchRecipes() async -> (response: RecipeResponse?, error: Error?) {
-        guard let url = URL(string: recipesEndpoint) else {
+    private func fetchData(endpoint: Endpoint) async -> (response: RecipeResponse?, error: Error?) {
+        guard let url = endpoint.url else {
             return (nil, NetworkError.invalidURL)
         }
         do {
@@ -46,12 +63,23 @@ class NetworkManager: APIProtocol {
         } catch {
             return (nil, NetworkError.unknowenError(error: error))
         }
-        
+    }
+    
+    func fetchRecipes() async -> (response: RecipeResponse?, error: Error?) {
+        await fetchData(endpoint: .recipes)
+    }
+    
+    func fetchRecipesMalformed() async -> (response: RecipeResponse?, error: Error?) {
+        await fetchData(endpoint: .malformedData)
+    }
+    
+    func fetchEmptyRecipes() async -> (response: RecipeResponse?, error: Error?) {
+        await fetchData(endpoint: .emptyData)
     }
 }
 
 // Created this Enum to help developers to handle the errors. If any of errors should be send to the user we can show in an AlertView or any other way the designer choose. I add the localized description to give better message.
-enum NetworkError: Error {
+enum NetworkError: LocalizedError {
     case noData
     case invalidDataFormart
     case invalidToken
@@ -62,7 +90,10 @@ enum NetworkError: Error {
     case networkFailure(error: Error)
     case unknowenError(error: Error)
     
-    var localizedDescription: String {
+    /// A localized message describing the reason for the failure.
+    var failureReason: String? { "" }
+    
+    var errorDescription: String? {
         switch self {
         case .invalidDataFormart:
             return "Invalid data format was received from the server"

@@ -6,7 +6,7 @@
 //
 
 struct Recipe: Hashable, Decodable {
-    var uuid: String
+    var id: String
     var cuisine: String
     var name: String
     var photoUrlLarge: String?
@@ -15,7 +15,7 @@ struct Recipe: Hashable, Decodable {
     var youtubeUrl: String?
     
     init(recipeServerResponse: RecipeServerResponse) {
-        self.uuid = recipeServerResponse.uuid
+        self.id = recipeServerResponse.uuid
         self.cuisine = recipeServerResponse.cuisine
         self.name = recipeServerResponse.name
         self.photoUrlLarge = recipeServerResponse.photoUrlLarge
