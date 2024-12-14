@@ -25,7 +25,7 @@ class RecipesViewModel: ObservableObject {
     var cusines: [String] = []
     let api: APIProtocol
     
-    init(api: APIProtocol = NetworkManager.shared) {
+    init(api: APIProtocol = RecipeService.shared) {
         self.api = api
     }
     
@@ -35,12 +35,12 @@ class RecipesViewModel: ObservableObject {
     }
     
     func fetchMalformedRecipes() async {
-        guard let result = await (api as? NetworkManager)?.fetchRecipesMalformed() else { return }
+        guard let result = await (api as? RecipeService)?.fetchRecipesMalformed() else { return }
         await parseData(response: result.response, error: result.error)
     }
     
     func fetchEmptyRecipes() async {
-        guard let result = await (api as? NetworkManager)?.fetchEmptyRecipes() else { return }
+        guard let result = await (api as? RecipeService)?.fetchEmptyRecipes() else { return }
         await parseData(response: result.response, error: result.error)
     }
     

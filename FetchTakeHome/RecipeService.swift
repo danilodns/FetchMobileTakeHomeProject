@@ -30,8 +30,8 @@ fileprivate enum Endpoint {
     var url: URL? { URL(string:baseURL + rawValue) }
 }
 
-class NetworkManager: APIProtocol {
-    static let shared = NetworkManager()
+class RecipeService: APIProtocol {
+    static let shared = RecipeService()
     
     private func fetchData(endpoint: Endpoint) async -> (response: RecipeResponse?, error: Error?) {
         guard let url = endpoint.url else {
