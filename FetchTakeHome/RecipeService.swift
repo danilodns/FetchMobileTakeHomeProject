@@ -27,21 +27,21 @@ fileprivate enum Endpoint {
         }
     }
     
-    var url: URL? { URL(string:baseURL + rawValue) }
+    var url: URL { URL(string:baseURL + rawValue)! }
 }
 
 class RecipeService: APIProtocol {
+    private let session: URLSession
     static let shared = RecipeService()
     
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
+    
     private func fetchData(endpoint: Endpoint) async -> (response: RecipeResponse?, error: Error?) {
-        guard let url = endpoint.url else {
-            return (nil, NetworkError.invalidURL)
-        }
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let responseURL = response as? HTTPURLResponse else {
-                return (nil, NetworkError.invalidURL)
-            }
+            let (data, response) = try await session.data(from: endpoint.url)
+            let responseURL = response as! HTTPURLResponse
             switch responseURL.statusCode {
             case 200..<300:
                 let decoder = JSONDecoder()
@@ -69,6 +69,8 @@ class RecipeService: APIProtocol {
         await fetchData(endpoint: .recipes)
     }
     
+    // Uncomment to test for malformed and empty recipes
+    /*
     func fetchRecipesMalformed() async -> (response: RecipeResponse?, error: Error?) {
         await fetchData(endpoint: .malformedData)
     }
@@ -76,14 +78,13 @@ class RecipeService: APIProtocol {
     func fetchEmptyRecipes() async -> (response: RecipeResponse?, error: Error?) {
         await fetchData(endpoint: .emptyData)
     }
+     */
 }
 
 // Created this Enum to help developers to handle the errors. If any of errors should be send to the user we can show in an AlertView or any other way the designer choose. I add the localized description to give better message.
 enum NetworkError: LocalizedError {
     case noData
     case invalidDataFormart
-    case invalidToken
-    case invalidURL
     case clientError(statusCode: Int)
     case serverError(statusCode: Int)
     // Indicates there was a network-related issue, like no internet connection.
@@ -97,10 +98,6 @@ enum NetworkError: LocalizedError {
         switch self {
         case .invalidDataFormart:
             return "Invalid data format was received from the server"
-        case .invalidToken:
-            return "No user token set or it is invalid"
-        case .invalidURL:
-            return "The URL provided was invalid."
         case .noData:
             return "No data was received from the server"
         case .clientError(let statusCode):

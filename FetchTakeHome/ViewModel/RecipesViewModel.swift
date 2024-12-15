@@ -34,6 +34,8 @@ class RecipesViewModel: ObservableObject {
         await parseData(response: result.response, error: result.error)
     }
     
+    //Uncomment to test for malformed and empty recipes
+    /*
     func fetchMalformedRecipes() async {
         guard let result = await (api as? RecipeService)?.fetchRecipesMalformed() else { return }
         await parseData(response: result.response, error: result.error)
@@ -43,7 +45,7 @@ class RecipesViewModel: ObservableObject {
         guard let result = await (api as? RecipeService)?.fetchEmptyRecipes() else { return }
         await parseData(response: result.response, error: result.error)
     }
-    
+    */
     private func parseData(response: RecipeResponse?, error: Error?) async {
         await MainActor.run { [weak self] in
             self?.recipes = response?.recipes.compactMap({ Recipe(recipeServerResponse: $0) }) ?? []

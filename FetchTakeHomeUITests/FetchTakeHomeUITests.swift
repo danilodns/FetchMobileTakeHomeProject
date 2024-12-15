@@ -22,22 +22,20 @@ final class FetchTakeHomeUITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testNewFeatures() throws {
+        
         let app = XCUIApplication()
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    @MainActor
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
-            }
-        }
+//        let collectionViewsQuery = app.collectionViews
+//        let element = collectionViewsQuery.children(matching: .cell).element(boundBy: 0).children(matching: .other).element(boundBy: 1).children(matching: .other).element
+//        element.tap()
+//        element.tap()
+        XCTAssert(app.navigationBars["Recipes"]/*@START_MENU_TOKEN@*/.buttons["line.3.horizontal.decrease"]/*[[".otherElements[\"line.3.horizontal.decrease\"].buttons[\"line.3.horizontal.decrease\"]",".buttons[\"line.3.horizontal.decrease\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.exists)
+        app.navigationBars["Recipes"]/*@START_MENU_TOKEN@*/.buttons["line.3.horizontal.decrease"]/*[[".otherElements[\"line.3.horizontal.decrease\"].buttons[\"line.3.horizontal.decrease\"]",".buttons[\"line.3.horizontal.decrease\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+//        collectionViewsQuery.children(matching: .cell).element(boundBy: 1).children(matching: .other).element(boundBy: 1).children(matching: .other).element.tap()
+        XCTAssert(app.buttons["Select All"].exists)
+        XCTAssert(app.buttons["Remove All"].exists)
+        XCTAssert(app.navigationBars["Filter"]/*@START_MENU_TOKEN@*/.buttons["Done"]/*[[".otherElements[\"Done\"].buttons[\"Done\"]",".buttons[\"Done\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.exists)
+                                        
     }
 }

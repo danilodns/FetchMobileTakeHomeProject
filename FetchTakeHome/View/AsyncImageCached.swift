@@ -6,25 +6,30 @@
 //
 
 import SwiftUI
+import os
 
 // Create to cache the images on memory
 
-fileprivate class ImageCache {
+class ImageCache {
+    private static let logger = Logger(
+            subsystem: Bundle.main.bundleIdentifier!,
+            category: String(describing: ImageCache.self)
+        )
     static private let fileManager = FileManager.default
     
     static private var cacheDirectory: URL? {
         return fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first
     }
     
-    static subscript(url: String) -> UIImage? {
+    static subscript(url: URL) -> UIImage? {
         get {
             // Fetch UIImage from disk
-            return fetchImageData(with: url)
+            return fetchImageData(with: String(url.relativePath.dropFirst()))
         }
         set {
             // Save UIImage to disk
             if let newValue = newValue {
-                save(newValue, for: url)
+                save(newValue, for: String(url.relativePath.dropFirst()))
             }
         }
     }
@@ -32,13 +37,13 @@ fileprivate class ImageCache {
     static func save(_ uiImage: UIImage, for url: String) {
         // Convert UIImage to PNG data
         guard let data = uiImage.pngData() else {
-            print("Failed to convert UIImage to PNG data.")
+            logger.error("Failed to convert UIImage to PNG data.")
             return
         }
         
         // Save the PNG data to disk
         guard let cacheDirectory = cacheDirectory else {
-            print("Failed to locate cache directory.")
+            logger.error("Failed to locate cache directory.")
             return
         }
         
@@ -49,18 +54,24 @@ fileprivate class ImageCache {
         if !fileManager.fileExists(atPath: folderURL.path) {
             do {
                 try fileManager.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)
-                print("Folder created at \(folderURL)")
+                logger.info( "Folder created at \(folderURL)")
             } catch {
-                print("Error creating folder: \(error)")
+                logger.error("Error creating folder: \(error.localizedDescription)")
                 return
             }
         }
         do {
             try data.write(to: fileURL)
-            print("Image saved to disk at: \(fileURL)")
+            logger.info("Image saved to disk at: \(fileURL)")
         } catch {
-            print("Error saving image to disk: \(error)")
+            logger.error("Error saving image to disk: \(error)")
         }
+    }
+    
+    static func delete(url: URL) throws {
+        guard let cacheDirectory = cacheDirectory else { return }
+        let fileURL = cacheDirectory.appendingPathComponent(String(url.relativePath.dropFirst()))
+        try FileManager.default.removeItem(at: fileURL)
     }
     
     static func fetchImageData(with fileName: String) -> UIImage? {
@@ -102,10 +113,10 @@ struct AsyncImageCached<Content>: View where Content: View{
     
     private func fetchFromCache(url: URL) -> UIImage? {
         // Access the cache in a non-SwiftUI-dependent manner
-        return ImageCache[url.relativePath]
+        return ImageCache[url]
     }
     
-    private func cacheImage(_ image: Image, for url: String) {
+    private func cacheImage(_ image: Image, for url: URL) {
         guard let uiImage = image.asUIImage() else {
             return
         }
@@ -114,7 +125,7 @@ struct AsyncImageCached<Content>: View where Content: View{
     
     func cacheAndShow(phase: AsyncImagePhase) -> some View {
         if case .success(let image) = phase, let url {
-            cacheImage(image, for: url.relativePath)
+            cacheImage(image, for: url)
         }
         return content(phase)
     }

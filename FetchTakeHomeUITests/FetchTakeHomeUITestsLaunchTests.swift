@@ -1,33 +1,33 @@
+////
+////  FetchTakeHomeUITestsLaunchTests.swift
+////  FetchTakeHomeUITests
+////
+////  Created by Danilo Silveira on 2024-12-03.
+////
 //
-//  FetchTakeHomeUITestsLaunchTests.swift
-//  FetchTakeHomeUITests
+//import XCTest
 //
-//  Created by Danilo Silveira on 2024-12-03.
+//final class FetchTakeHomeUITestsLaunchTests: XCTestCase {
 //
-
-import XCTest
-
-final class FetchTakeHomeUITestsLaunchTests: XCTestCase {
-
-    override class var runsForEachTargetApplicationUIConfiguration: Bool {
-        true
-    }
-
-    override func setUpWithError() throws {
-        continueAfterFailure = false
-    }
-
-    @MainActor
-    func testLaunch() throws {
-        let app = XCUIApplication()
-        app.launch()
-
-        // Insert steps here to perform after app launch but before taking a screenshot,
-        // such as logging into a test account or navigating somewhere in the app
-
-        let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Launch Screen"
-        attachment.lifetime = .keepAlways
-        add(attachment)
-    }
-}
+//    override class var runsForEachTargetApplicationUIConfiguration: Bool {
+//        true
+//    }
+//
+//    override func setUpWithError() throws {
+//        continueAfterFailure = false
+//    }
+//
+//    @MainActor
+//    func testLaunch() throws {
+//        let app = XCUIApplication()
+//        app.launch()
+//
+//        // Insert steps here to perform after app launch but before taking a screenshot,
+//        // such as logging into a test account or navigating somewhere in the app
+//
+//        let attachment = XCTAttachment(screenshot: app.screenshot())
+//        attachment.name = "Launch Screen"
+//        attachment.lifetime = .keepAlways
+//        add(attachment)
+//    }
+//}

@@ -26,7 +26,7 @@ struct ContentView: View {
                 } else {
                     List {
                         ForEach(viewModel.filteredRecipes, id: \.id) { recipe in
-                            LazyVStack {
+                            VStack {
                                 RecipeCellComponent(recipe: recipe)
                             }
                         }
