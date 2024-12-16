@@ -26,13 +26,8 @@ final class FetchTakeHomeUITests: XCTestCase {
         
         let app = XCUIApplication()
         app.launch()
-//        let collectionViewsQuery = app.collectionViews
-//        let element = collectionViewsQuery.children(matching: .cell).element(boundBy: 0).children(matching: .other).element(boundBy: 1).children(matching: .other).element
-//        element.tap()
-//        element.tap()
         XCTAssert(app.navigationBars["Recipes"]/*@START_MENU_TOKEN@*/.buttons["line.3.horizontal.decrease"]/*[[".otherElements[\"line.3.horizontal.decrease\"].buttons[\"line.3.horizontal.decrease\"]",".buttons[\"line.3.horizontal.decrease\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.exists)
         app.navigationBars["Recipes"]/*@START_MENU_TOKEN@*/.buttons["line.3.horizontal.decrease"]/*[[".otherElements[\"line.3.horizontal.decrease\"].buttons[\"line.3.horizontal.decrease\"]",".buttons[\"line.3.horizontal.decrease\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-//        collectionViewsQuery.children(matching: .cell).element(boundBy: 1).children(matching: .other).element(boundBy: 1).children(matching: .other).element.tap()
         XCTAssert(app.buttons["Select All"].exists)
         XCTAssert(app.buttons["Remove All"].exists)
         XCTAssert(app.navigationBars["Filter"]/*@START_MENU_TOKEN@*/.buttons["Done"]/*[[".otherElements[\"Done\"].buttons[\"Done\"]",".buttons[\"Done\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.exists)
